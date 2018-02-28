@@ -1,0 +1,324 @@
+#include<stdio.h>
+#include<system.h>
+#include<stdlib.h>
+#include"ALTERA_AVALON_PIO_REGS.h"
+#include"ALTERA_AVALON_TIMER_REGS.h"
+#include"ALTERA_AVALON_TIMER.h"
+#include"altera_avalon_jtag_uart_regs.h"
+#include"altera_avalon_jtag_uart.h"
+#include "sys/alt_irq.h"
+#include<unistd.h>
+volatile int edge_capture;
+int ar[18]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17};
+int keyinput[18],i=0,j=0,k=0,l=0,a,flag,key;
+int sel,led, level=1, inputs=4,x=125000;
+int ledin[100], run=0;
+void init_timer_interrupt(void);
+int ledblink();
+void init_pio();
+void config_timer();
+int main()
+{
+	init_timer_interrupt();
+	init_pio();
+	int input=4,score;
+	IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x000000);
+	while(1)
+	{
+		if(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE)==6)
+		{printf("Level 1");
+			printf("Hold you eyes on leds and prove your catching power");
+		for(i=0;i<input;i++)
+		{sel=ledselect(ar,18);
+		led=ledblink(sel);
+		ledin[i]=led;
+		printf("%d \n",ledin[i]);
+		led=0;
+
+		}}
+		if(i==input)
+		{	printf("remember sequence \n");
+		i=0;
+		x=x/level;
+		printf("Press key 2 to Start to giving your input\n");
+			key=IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE);
+			printf("Press key 2 again when you finish your input \n");
+		}
+}
+}
+
+int ledselect(int ar[],int n)
+{
+	int ran;
+	int mmm = rand()%17;
+	ran=ar[mmm];
+return ran;
+}
+int ledblink(int x)
+{
+	int l;
+	IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x000000);
+	if(x==0)
+	{
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x1);
+	l=0;
+	}
+	else if(x==1)
+		{
+			IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x2);
+		l=1;
+		}
+	else if(x==2)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x4);
+			l=2;
+			}
+	else if(x==3)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x8);
+			l=3;
+			}
+	else if(x==4)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x10);
+			l=4;
+			}
+	else if(x==5)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x20);
+			l=5;}
+	else if(x==6)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x40);
+				l=6;
+			}
+	else if(x==7)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x80);
+				l=7;
+			}
+	else if(x==8)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x100);
+				l=8;
+			}
+	else if(x==9)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x200);
+				l=9;
+			}
+	else if(x==10)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x400);
+				l=10;
+			}
+	else if(x==11)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x800);
+				l=11;
+			}
+	else if(x==12)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x1000);
+				l=12;
+			}
+	else if(x==13)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x2000);
+				l=13;
+			}
+	else if(x==14)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x4000);
+				l=14;
+			}
+	else if(x==15)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x8000);
+				l=15;
+			}
+	else if(x==16)
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x10000);
+				l=16;
+			}
+	else
+			{
+				IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x20000);
+			l=17;
+			}
+
+		usleep(25000);
+		IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE,0x0000);
+		return l;
+}
+void config_timer()
+{
+	IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE,0x00);
+    if(run==1)
+    	{printf("key pressed");
+    	if(a==0x1)
+    	{
+    		k=0;
+    		keyinput[j]=k;
+    		j++;
+    	}
+    	else if(a==0x2)
+    		{
+    			k=1;
+    			keyinput[j]=k;
+    			j++;
+    		}
+    	else if(a==0x4)
+    			{
+    			k=2;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x8)
+    			{
+    			k=3;
+    			keyinput[j]=k;
+    					j++;
+    			}
+    	else if(a==0x10)
+    			{
+    			k=4;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x20)
+    			{
+    			k=5;keyinput[j]=k;
+    			j++;}
+    	else if(a==0x40)
+    			{
+    			k=6;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x80)
+    			{
+    			k=7;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x100)
+    			{
+    			k=8;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x200)
+    			{
+    			k=9;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x400)
+    			{
+    			k=10;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x800)
+    			{
+    			k=11;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x1000)
+    			{
+    			k=12;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x2000)
+    			{
+    			k=13;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x4000)
+    			{
+    			k=14;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x8000)
+    			{
+    			k=15;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x10000)
+    			{
+    			k=16;keyinput[j]=k;
+    			j++;
+    			}
+    	else if(a==0x20000)
+    			{
+    			k=17;keyinput[j]=k;
+    			j++;
+    			}
+    printf("%d \n",keyinput[j]);
+}}
+
+
+void init_timer_interrupt(void)
+{
+int* ptr;
+IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE, (1<<3) | (1 << 1) |(1 << 0));
+IOWR_ALTERA_AVALON_TIMER_STATUS(TIMER_0_BASE,0); // Clear TO Bit(Reaching 0)
+IOWR_ALTERA_AVALON_TIMER_PERIODL(TIMER_0_BASE,(100000000)); // 1 Sek Interrupt // 100 ms Interrupt
+IOWR_ALTERA_AVALON_TIMER_PERIODH(TIMER_0_BASE,( (100000000) >> 16 )); // 1 Sek Interrupt
+alt_ic_isr_register(TIMER_0_IRQ_INTERRUPT_CONTROLLER_ID, TIMER_0_IRQ,config_timer, ptr, 0x0); //Register Interrupt
+IOWR_ALTERA_AVALON_TIMER_CONTROL(TIMER_0_BASE,(1<< 2) | (1 << 1) | (1 << 0) ); //Start Timer, IRQ enable, Continuous enable
+}
+
+void switch_interrupt(void* context, alt_u32 id) {
+	/* Cast context to edge_capture's type. It is important that this be
+	 * declared volatile to avoid unwanted compiler optimization.
+	 */
+	volatile int* edge_capture_ptr = (volatile int*) context;
+	/* Store the value in the Button's edge capture register in *context. */
+	a = IORD_ALTERA_AVALON_PIO_DATA(SW0_BASE);
+}
+
+/* Initialize the pio. */
+
+void init_pio() {
+	/* Recast the edge_capture pointer to match the alt_irq_register() function
+	 * prototype. */
+	/* Enable first four interrupts. */
+	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(SW0_BASE, 0x7);
+	/* Reset the edge capture register. */
+	IOWR_ALTERA_AVALON_PIO_DATA(SW0_BASE, 0x0);
+	/* Register the interrupt handler. */
+	alt_irq_register( SW0_IRQ, 0, switch_interrupt);
+}
+void key_interrupt(void* context, alt_u32 id) {
+	/* Cast context to edge_capture's type. It is important that this be
+	 * declared volatile to avoid unwanted compiler optimization.
+	 */
+	volatile int* edge_capture_ptr = (volatile int*) context;
+	/* Store the value in the Button's edge capture register in *context. */
+	a = IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE);
+	if(a==5)
+	{	run++;
+	printf("input start");
+	if(run==2)
+	{
+		printf("Here is your score");
+		for(l=0;l<4;l++)
+		{
+		if(keyinput[l]==ledin[l])
+		{if(l==input)
+		{
+		i=0;j=0;k=0;
+		input=input+2;
+		level=input;
+		score=1*level; flag=0;
+		run=0;
+		}}}}}
+}
+
+/* Initialize the pio. */
+
+void init_key() {
+	void* edge_capture_ptr = (void*)&edge_capture;
+	/* Enable first four interrupts. */
+	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(KEY_BASE, 0x7);
+	/* Reset the edge capture register. */
+	IOWR_ALTERA_AVALON_PIO_EDGE_CAP(KEY_BASE, 0x0);
+	/* Register the interrupt handler. */
+	alt_irq_register( KEY_IRQ, edge_capture_ptr, key_interrupt);
+}

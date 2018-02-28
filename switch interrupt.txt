@@ -1,0 +1,61 @@
+
+#include<stdio.h>
+#include<system.h>
+#include<stdlib.h>
+#include"ALTERA_AVALON_PIO_REGS.h"
+#include"ALTERA_AVALON_TIMER_REGS.h"
+#include"ALTERA_AVALON_TIMER.h"
+#include"altera_avalon_jtag_uart_regs.h"
+#include"altera_avalon_jtag_uart.h"
+#include "sys/alt_irq.h"
+#include<unistd.h>
+volatile int edge_capture;
+void init_pio();
+int a,ar[10],m;
+int b,run=0,i;
+int am[10]={0,1,2,3,4,5,6,7,8,9};
+int main()
+{IOWR_ALTERA_AVALON_PIO_DATA(LEDR_BASE, 0x0);
+init_key();
+while(1)
+	{
+
+	}
+}
+
+void key_interrupt(void* context, alt_u32 id) {
+	/* Cast context to edge_capture's type. It is important that this be
+	 * declared volatile to avoid unwanted compiler optimization.
+	 */
+	volatile int* edge_capture_ptr = (volatile int*) context;
+	/* Store the value in the Button's edge capture register in *context. */
+	b = IORD_ALTERA_AVALON_PIO_EDGE_CAP(SW0_BASE);
+	if(b==1024)
+	{	m= rand()%10;
+		ar[run]=am[m];
+		run++;
+}
+	if(b==128)
+	{printf("enterd condition");
+		for(i=0;i<run;i++)
+		{
+			printf("%d ",ar[i]);
+			usleep(125000);
+		}
+	run=0;}i=0;
+	IOWR_ALTERA_AVALON_PIO_EDGE_CAP(SW0_BASE, 0x3FFFF);
+}
+
+/* Initialize the pio. */
+
+void init_key() {
+		/* Recast the edge_capture pointer to match the alt_irq_register() function
+		 * prototype. */
+		void* edge_capture_ptr = (void*)&edge_capture;
+		/* Enable first four interrupts. */
+		IOWR_ALTERA_AVALON_PIO_IRQ_MASK(SW0_BASE, 0x3FFFF);
+		/* Reset the edge capture register. */
+		IOWR_ALTERA_AVALON_PIO_EDGE_CAP(SW0_BASE, 0x3FFFF);
+		/* Register the interrupt handler. */
+		alt_irq_register( SW0_IRQ, edge_capture_ptr, key_interrupt);
+	}
